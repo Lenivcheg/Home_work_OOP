@@ -23,18 +23,10 @@ class Student:
                f'Курсы в процессе обучения: {self.courses_in_progress}\nЗавершенные курсы :{self.finished_courses}'
         return info
 
-    def a_score(self):  # Не нравится реализация этого метода, будет время поправлю или дайте совет пожалуйста
-        total_grade = []
-        for i in self.grades:
-            total_grade += self.grades.get(i)
-
-        t_num = 0
-        g_mum = 0
-        for i in total_grade:
-            t_num += i
-            g_mum += 1
-
-        return f'{t_num / g_mum:.1f}'
+    def a_score(self):
+        for lesson, grade in self.grades.items():
+            rating = sum(grade) / len(grade)
+            return rating
 
     def __lt__(self, other):
         if not isinstance(other, Student):
@@ -55,7 +47,9 @@ class Lecturer(Mentor):
         self.grades = {}
 
     def a_score(self):
-        return Student.a_score(self)  # Насколько законно такое использование методов других классов?
+        for lesson, grade in self.grades.items():
+            rating_l = sum(grade) / len(grade)
+            return rating_l
 
     def __str__(self):
         info = f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции:{self.a_score()}'
@@ -149,30 +143,26 @@ student_list = [stu_2, stu_1]
 lecturer_list = [lec_1, lec_2]
 
 
-def average_score_s(s_list, course):  # Если видите этот текст - то я не успел довести до ума эти методы.
-    for i in s_list:
-        t_num = 0
-        g_mum = 0
-        if course in i.finished_courses or i.courses_in_progress:
-            for b in i.grades.get(course):
-                t_num += b
-                g_mum += 1
-        return print(f'Средняя оценка студентов по {course}:{t_num / g_mum:.1f}')
+def average_score_s(s_list, course):
+    res, num = 0, 0
+    for student in s_list:
+        if course in student.finished_courses or student.courses_in_progress:
+            res += sum(student.grades[course])
+            num += len(student.grades[course])
+        return print(f'Средняя оценка студентов по {course} {res / num}')
 
 
-def average_score_l(c_list, course):  # Если видите этот текст - то я не успел довести до ума эти методы.
-    for i in c_list:
-        t_num = 0
-        g_mum = 0
-        if course in i.courses_attached:
-            for b in i.grades.get(course):
-                t_num += b
-                g_mum += 1
-        return print(f'Средняя оценка лекторов по {course}:{t_num / g_mum:.1f}')
+def average_score_l(l_list, course):
+    res, num = 0, 0
+    for lecture in l_list:
+        if course in lecture.courses_attached:
+            res += sum(lecture.grades[course])
+            num += len(lecture.grades[course])
+    print(f'Средняя оценка студентов по {course} {res / num}')
 
 
 average_score_s(student_list, 'SQL')
-average_score_l(lecturer_list, 'SQL')
+average_score_l(lecturer_list, 'Git')
 
 
 print('\n')
